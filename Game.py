@@ -11,10 +11,11 @@ class Game:
         self.free_positions = [(i,j) for i in range(self.board_size) for j in range (self.board_size)]
         self.winner = None
         self.turn = AGENT # Agent begins (hence has an advantage)
-        self.game_history= [] # for CSV logging in class Torunament later
+        self.game_history = []
+        self.boards_log = [] 
         self.random = randomMoves(self)
 
-    def play(self):
+    def play(self) -> tuple:
         while True:
             turn = self.turn
             pick = self.random.pick_random_move()
@@ -23,12 +24,13 @@ class Game:
                 break
 
             self.make_a_move(pick)
-            won = self.check_win(pick, turn)
-            if won:
+            if self.check_win(pick, turn):
                 self.winner = turn
                 break
+
+        return (self.winner, self.game_history, self.boards_log)
     
-    def make_a_move(self, pick) -> bool:
+    def make_a_move(self, pick):
         row = pick[0]
         column = pick[1]
         if self.turn == AGENT: 
@@ -40,9 +42,10 @@ class Game:
 
         self.free_positions.remove(pick) 
         self.game_history.append(pick)
-        return True
+        current_board = tuple(tuple(row) for row in self.board) # convert to tuple to use as dict key
+        self.boards_log.append(current_board)
 
-    def check_win(self, pick, turn):
+    def check_win(self, pick, turn) -> bool:
         # instead of checking all of the O(n^2) itmes, with rows -> column -> diagonal scan,
         # wee will scan only the row and column of the current move, in O(n) :)
         won = True
@@ -89,4 +92,5 @@ class Game:
         self.free_positions = [(i,j) for i in range(self.board_size) for j in range (self.board_size)]
         self.winner = None
         self.turn = AGENT
-        self.game_history= []
+        self.game_history = []
+        self.boards_log = []
