@@ -1,5 +1,5 @@
 import numpy as np
-from TicTacToe import Game
+from Game import Game
 
 class Tournament:
     def __init__(self, board_size, count):
@@ -58,4 +58,3 @@ class Tournament:
         print("Rival won", self.total_rival_wins, "times")
         print("there were", self.draws, "draws")
         print("with an average of", round(self.total_moves/100000), "moves per game")
-

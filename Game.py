@@ -1,61 +1,46 @@
-import random
+from randomMoves import randomMoves
 
 AGENT = 1
-X = 1
 RIVAL = -1
-O = -1
 DRAW = 0
+
 class Game:
     def __init__(self, board_size):
-        '''Class Constructor'''
         self.board_size = board_size
-        self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
-        self.free_positions = []
-        self.initialize_free_positions()
+        self.board = [[0 for i in range(self.board_size)] for j in range(self.board_size)]
+        self.free_positions = [(i,j) for i in range(self.board_size) for j in range (self.board_size)]
         self.winner = None
-        self.turn = AGENT
-        self.game_history= []
-
-    def initialize_free_positions(self):
-        '''initialize the free positions list'''
-        for i in range(self.board_size):
-            for j in range(self.board_size):
-                self.free_positions.append((i,j))
+        self.turn = AGENT # Agent begins (hence has an advantage)
+        self.game_history= [] # for CSV logging in class Torunament later
+        self.random = randomMoves(self)
 
     def play(self):
         while True:
             turn = self.turn
-            pick = self.pick_random_move()
+            pick = self.random.pick_random_move()
             if pick is None: # board full
                 self.winner = DRAW
-                break # Draw
+                break
+
             self.make_a_move(pick)
             won = self.check_win(pick, turn)
             if won:
                 self.winner = turn
                 break
     
-    def make_a_move(self, pick):
+    def make_a_move(self, pick) -> bool:
         row = pick[0]
         column = pick[1]
         if self.turn == AGENT: 
-            self.board[row][column] = X
+            self.board[row][column] = AGENT
             self.turn = RIVAL
         else: 
-            self.board[row][column] = O
+            self.board[row][column] = RIVAL
             self.turn = AGENT
 
-        self.free_positions.remove(pick)
+        self.free_positions.remove(pick) 
         self.game_history.append(pick)
         return True
-
-    def pick_random_move(self):
-        if len(self.free_positions) == 0:
-            return None # no more free positions - board full
-        # pick random move 
-        pick_index = random.randint(0, len(self.free_positions) - 1)
-        pick = self.free_positions[pick_index]
-        return pick
 
     def check_win(self, pick, turn):
         # instead of checking all of the O(n^2) itmes, with rows -> column -> diagonal scan,
@@ -100,9 +85,8 @@ class Game:
         print()
 
     def reset_game(self):
-        self.board = [[0 for _ in range(self.board_size)] for _ in range(self.board_size)]
-        self.free_positions = []
-        self.initialize_free_positions()
+        self.board = [[0 for i in range(self.board_size)] for j in range(self.board_size)]
+        self.free_positions = [(i,j) for i in range(self.board_size) for j in range (self.board_size)]
         self.winner = None
         self.turn = AGENT
         self.game_history= []
