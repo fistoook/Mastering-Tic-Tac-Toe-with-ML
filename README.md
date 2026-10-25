@@ -96,3 +96,6 @@ Carlos currently stops a match if any candidate board is missing from his dictio
 Only download and use the code if you trust it.
 
 The code uses `pickle` to save and load Carlos's dictionary. Loading an untrusted pickle file can execute arbitrary code, so only use a `dict` file you trust. All I am saying is use it with caution. I have absolutely no intent of doing anything bad :) This code is free so that others can learn from it :)
+
+## License
+this code is under the MIT license. no idea what that means, but soudns cool :)
