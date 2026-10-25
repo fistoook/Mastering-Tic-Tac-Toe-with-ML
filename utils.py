@@ -1,6 +1,13 @@
+import numpy as np
+
 class utils:
-    def __init__(self):
-        pass
+    def __init__(self, board_size):
+        self.board_size = board_size
+        self.max_moves = self.board_size ** 2
+
+    def modify_board_size(self, new_size):
+        self.board_size = new_size
+        self.max_moves = self.board_size ** 2
 
     def _print_game_dict(self, limit=70):
         # Convert the numerical board representation into symbols
@@ -44,16 +51,39 @@ class utils:
         print(f"\nTotal unique boards: {len(self.game_dict)}")
 
     
-    def _log_game(self, game_id, winner, game_history):
+    def log_game(self, master, game_id, winner, game_history):
         moves = []
         for row, column in game_history:
             moves.append(f"({row};{column})")
-        self.total_moves += len(moves)
 
         missing_moves = self.max_moves - len(moves)
         moves.extend([""] * missing_moves) # pad the empty slots for the csv
 
-        game_row = [game_id] + moves + [self.game.winner]
-        self.results.append(game_row)
+        game_row = [game_id] + moves + [winner]
+        master.games_list.append(game_row)
 
-        self.update_score(winner)
+
+    def log_results(self, master) -> bool:
+        try:
+            headers = ["game_id"]
+
+            for move_number in range(1, master.max_moves + 1):
+                headers.append(f"move_{move_number}")
+
+            headers.append("winner")
+
+            results_array = np.asarray(self.results, dtype=str)
+
+            np.savetxt(
+                self.csv_filepath,
+                results_array,
+                delimiter=",",
+                fmt="%s",
+                header=",".join(headers),
+                comments="",
+                encoding="utf-8"
+            )
+
+            return True 
+        except: 
+            return False
