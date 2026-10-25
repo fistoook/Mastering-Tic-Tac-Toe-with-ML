@@ -1,13 +1,9 @@
 import numpy as np
 
 class utils:
-    def __init__(self, board_size):
+    def __init__(self, board_size, csv_filepath):
         self.board_size = board_size
-        self.max_moves = self.board_size ** 2
-
-    def modify_board_size(self, new_size):
-        self.board_size = new_size
-        self.max_moves = self.board_size ** 2
+        self.csv_filepath = csv_filepath
 
     def _print_game_dict(self, limit=70):
         # Convert the numerical board representation into symbols
@@ -56,7 +52,7 @@ class utils:
         for row, column in game_history:
             moves.append(f"({row};{column})")
 
-        missing_moves = self.max_moves - len(moves)
+        missing_moves = master.max_moves - len(moves)
         moves.extend([""] * missing_moves) # pad the empty slots for the csv
 
         game_row = [game_id] + moves + [winner]
@@ -72,7 +68,7 @@ class utils:
 
             headers.append("winner")
 
-            results_array = np.asarray(self.results, dtype=str)
+            results_array = np.asarray(master.games_list, dtype=str)
 
             np.savetxt(
                 self.csv_filepath,

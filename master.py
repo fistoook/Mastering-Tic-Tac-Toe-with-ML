@@ -31,7 +31,7 @@ class Master:
             "total_moves": 0
         }
         self.games_list = []
-        self.utils = utils(board_size)
+        self.utils = utils(board_size, "outputs/games.csv")
 
     def train_agent(self, agent_id, count) -> bool:
         try:
@@ -61,6 +61,10 @@ class Master:
 
         # log games into games.csv
         success = self.utils.log_results(self)
+        if success:
+            print("The games were logged to games.csv")
+        else:
+            print("an error occured while logging the games to csv")
 
         # save to dictionary for carlos
         agent.save_knowledge()
@@ -100,15 +104,14 @@ class Master:
 
             try:
                 winner, game_history, boards_log = game.play()
-            except RuntimeError as r:
-                print(r)
-            except FileNotFoundError as f:
-                print(f)
-            except KeyError as k:
-                print(k)
+            except (RuntimeError, FileNotFoundError, KeyError) as e:
+                raise RuntimeError(e)
 
-            self._update_score(winner)
-            self.results["total_moves"] += len(boards_log)
+            try:
+                self._update_score(winner)
+                self.results["total_moves"] += len(boards_log)
+            except UnboundLocalError:
+                print("an unepected error occured during the game...")
 
         return self.results
 

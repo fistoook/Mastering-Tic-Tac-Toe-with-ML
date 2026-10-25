@@ -24,7 +24,10 @@ class Game:
     
     def pick_move(self) -> tuple:
         if self.turn == AGENT:
-            pick = self.agent.pick_move(self)
+            try:
+                pick = self.agent.pick_move(self)
+            except KeyError: 
+                raise KeyError(f"Board not found in dictionary, train {self.agent.getName()} on a bigger set.")
             if pick is None: 
                 raise RuntimeError(f"Agent {self.agent if self.turn ==  AGENT else self.rival} spit out garbage.")
         elif self.turn == RIVAL:

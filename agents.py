@@ -61,13 +61,14 @@ class carlos(agent):
         if not self.game_dict: # (non empty dictionaries evaluate to True in python)
             try:
                 dict_file = open(self.dict_filepath, 'rb')
-                self.game_dict = load(self.game_dict, dict_file)
+                self.game_dict = pickle.load(dict_file)
+                dict_file.close()
             except:
                 raise FileNotFoundError("dictionary file not found. provide it under this directory in 'dict' - or just train again")
         
-        best_rating = -math.inf
+        best_rating = -math.inf if game.turn == AGENT else math.inf
         best_pick = None
-        temp_board = game.board[:]
+        temp_board = [row[:] for row in game.board]
         for pick in game.free_positions:
             row = pick[0]
             column = pick[1]
@@ -75,9 +76,17 @@ class carlos(agent):
             current_board = tuple(tuple(row) for row in temp_board)
             try:
                 rating = self.game_dict[current_board][0]
-                if rating > best_rating:
-                    best_rating = rating
-                    best_pick = pick
+                if game.turn == AGENT:
+                    # maximize dictionary value for agent, in accordance with our learning system.
+                    if rating > best_rating:
+                        best_rating = rating
+                        best_pick = pick
+                else:
+                    # In case of the rival, we want to minimize the value of the selected board
+                    # the value is higher the btter the AGENTS position.
+                    if rating < best_rating:
+                        best_rating = rating
+                        best_pick = pick
             except KeyError:
                 raise KeyError(f"Board not found in dictionary, train {self.getName()} on a bigger set.")
             temp_board[row][column] = 0 # bring back the initial state 

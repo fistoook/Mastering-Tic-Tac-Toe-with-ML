@@ -12,16 +12,6 @@ class TerminalUI:
             return input("> ")
         return input(f"{agent_name}> ")
 
-    def pick_board_size(self) -> int:
-        while True:
-            try:
-                size = int(input("\nChoose the board size: "))
-                if size >= 3:
-                    return size
-                print("The board must be at least 3x3!")
-            except ValueError:
-                print("Please enter a valid integer.")
-
     def print_help(self, agent_name=None):
         print("\n" + "=" * 45)
         if agent_name is None:

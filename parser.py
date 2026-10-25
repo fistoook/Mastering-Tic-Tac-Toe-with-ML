@@ -80,8 +80,15 @@ class Parser:
                 # pick agent
                 self.pick_agent(choice)
             case ["board", "size", size]:
-                self.master.board_size = self.ui.pick_board_size()
-                self.master.utils.modify_board_size(self.master.board_size)
+                try:
+                    size = int(size)
+                    if size >= 3:
+                        self.master.board_size = size
+                        self.master.max_moves = size ** 2
+                        self.games_list = []
+                    else: print("The board must be at least 3x3!")
+                except:
+                    print("Board size has to be a number, you dummy!")
             case _:
                 self.ui.err_usage("agent <aid or name>")
 
@@ -166,5 +173,9 @@ class Parser:
                 return
 
         rival_name = self.available_agents[rival_id][0]
-        results = self.master.play(self.agent_id, rival_id, count)
+        try:
+            results = self.master.play(self.agent_id, rival_id, count)
+        except RuntimeError as e:
+            print(e)
+            return
         self.ui.print_play_request(self.get_agent_name(), rival_name, count, results)
